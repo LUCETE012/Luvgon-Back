@@ -72,11 +72,12 @@ app.get('/auth/google', async (req, res) => {
         headers: { Authorization: `Bearer ${resp.data.access_token}` },
     });
     // res.json(resp2.data['email']);
+
     sqlConn.setUser(resp2.data['email']);
     try {
         await sqlConn.addGoal(default_goals.month, 1, default_goals.goal);
     } catch (err) {
-        res.status(500).send();
+        res.status(607).send();
     }
 });
 
@@ -117,7 +118,7 @@ app.post('/addgoal', async (req, res) => {
 
         await sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
     } catch (err) {
-        res.status(500).send();
+        res.status(601).send();
     }
 });
 
@@ -132,7 +133,7 @@ app.post('/editgoal', async (req, res) => {
             edit_info.newGoal
         );
     } catch (err) {
-        res.status(500).send();
+        res.status(601).send();
     }
 });
 
@@ -143,7 +144,7 @@ app.post('/deletegoal', async (req, res) => {
 
         await sqlConn.deleteGoal(delet_info.month, delete_info.id);
     } catch (err) {
-        res.status(500).send();
+        res.status(602).send();
     }
 });
 
@@ -154,7 +155,7 @@ app.get('/getgoal/:month', async (req, res) => {
         const result = await sqlConn.getGoals(month);
         res.send(result);
     } catch (err) {
-        res.status(500).send();
+        res.status(603).send();
     }
 });
 
@@ -165,7 +166,7 @@ app.get('/user/search/:query', async (req, res) => {
         if (friends.length === 0) res.status(404).send();
         else res.send(friends);
     } catch (err) {
-        res.status(500).send();
+        res.status(604).send();
     }
 });
 
@@ -174,17 +175,17 @@ app.get('/user/follow/:email', async (req, res) => {
         let { email } = req.params;
         await sqlConn.addFollowing(email);
     } catch (err) {
-        res.status(500).send();
+        res.status(605).send();
     }
 });
 
-app.get('/user/friends', async (req, res) => { 
-  try {
-      // getFollowerings 함수를 이용
-      const friendsList = await sqlConn.getFollowings();
-      // 프론트엔드에 목록을 응답
-      res.send(friendsList);
-  } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error' });
-  }
+app.get('/user/friends', async (req, res) => {
+    try {
+        // getFollowerings 함수를 이용
+        const friendsList = await sqlConn.getFollowings();
+        // 프론트엔드에 목록을 응답
+        res.send(friendsList);
+    } catch (error) {
+        res.status(606).json({ error: 'Internal Server Error' });
+    }
 });
