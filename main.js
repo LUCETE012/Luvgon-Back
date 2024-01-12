@@ -10,14 +10,12 @@
 
 const express = require("express");
 const axios = require("axios");
-const dotenv = require('dotenv');
+const { authConfig } = require('./config/config');
 const { sql, poolPromise } = require('./config/server');
 const { SqlConnector } = require('./db');
 
 const app = express();
 const PORT = 3000;
-
-dotenv.config();
 let sqlConn;
 
 // Enable CORS for all routes
@@ -31,13 +29,13 @@ app.use(async (_, res, next) => {
 app.get('/test', async (req, res) => {
   sqlConn.setUser('nsun527@cau.ac.kr');
   const result = await sqlConn.getFollowings();
-  res.send(JSON.stringify(result));
+  res.send(result);
 });
 
 
 //루트 페이지
 //로그인 버튼을 누르면 GET /login으로 이동
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.send(`<a href="/auth">Log in</a>
   <a href="/signup">Sign up</a>`);
 });
@@ -45,58 +43,53 @@ app.get("/", (req, res) => {
 // 로그인 버튼을 누르면 도착하는 목적지 라우터
 // 모든 로직을 처리한 뒤 구글 인증서버인 https://accounts.google.com/o/oauth2/v2/auth
 // 으로 redirect 되는데, 이 url에 첨부할 몇가지 QueryString들이 필요
-app.get("/auth", (req, res) => {
-  let url = "https://accounts.google.com/o/oauth2/v2/auth";
-  url += `?client_id=${process.env.GOOGLE_CLIENT_ID}`;
-  url += `&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}`;
-  url += "&response_type=code";
-  url += "&scope=email profile";
-
-  res.redirect(url);
+app.get("/auth", (_, res) => {
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth
+?client_id=${authConfig.clientID}
+&redirect_uri=${authConfig.redirectUri}
+&response_type=code
+&scope=email profile`);
 });
 
 app.get("/auth/google", async (req, res) => {
   const { code } = req.query;
   console.log(`code: ${code}`);
 
-  const resp = await axios.post(process.env.GOOGLE_TOKEN_URL, {
+  const resp = await axios.post(authConfig.tokenUrl, {
     code,
-    client_id: process.env.GOOGLE_CLIENT_ID,
-    client_secret: process.env.GOOGLE_CLIENT_SECRET,
-    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-    grant_type: "authorization_code",
+    client_id:      authConfig.clientID,
+    client_secret:  authConfig.clientSecret,
+    redirect_uri:   authConfig.redirectUri,
+    grant_type:     "authorization_code",
   });
 
-  const resp2 = await axios.get(process.env.GOOGLE_USERINFO_URL, {
-    headers: {
-      Authorization: `Bearer ${resp.data.access_token}`,
-    },
+  const resp2 = await axios.get(authConfig.userinfoUrl, {
+    headers: { Authorization: `Bearer ${resp.data.access_token}` },
   });
   res.json(resp2.data);
 });
 
 app.get("/signup", (req, res) => {
-  let url = "https://accounts.google.com/o/oauth2/v2/auth";
-  url += `?client_id=${process.env.GOOGLE_CLIENT_ID}`;
-  url += `&redirect_uri=${process.env.GOOGLE_SIGNUP_REDIRECT_URI}`;
-  url += "&response_type=code";
-  url += "&scope=email profile";
-  res.redirect(url);
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth
+?client_id=${authConfig.clientID}
+&redirect_uri=${authConfig.signupUri}
+&response_type=code
+&scope=email profile`);
 });
 
 app.get("/signup/google", async (req, res) => {
   const { code } = req.query;
   console.log(`code: ${code}`);
 
-  const resp = await axios.post(process.env.GOOGLE_TOKEN_URL, {
+  const resp = await axios.post(authConfig.tokenUrl, {
     code,
-    client_id: process.env.GOOGLE_CLIENT_ID,
-    client_secret: process.env.GOOGLE_CLIENT_SECRET,
-    redirect_uri: process.env.GOOGLE_SIGNUP_REDIRECT_URI,
-    grant_type: "authorization_code",
+    client_id:      authConfig.clientID,
+    client_secret:  authConfig.clientSecret,
+    redirect_uri:   authConfig.signupUri,
+    grant_type:     "authorization_code",
   });
 
-  const resp2 = await axios.get(process.env.GOOGLE_USERINFO_URL, {
+  const resp2 = await axios.get(authConfig.userinfoUrl, {
     headers: {
       Authorization: `Bearer ${resp.data.access_token}`,
     },

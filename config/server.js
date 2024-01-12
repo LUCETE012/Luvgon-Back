@@ -9,9 +9,9 @@
  */
 
 const sql = require('mssql');
-const { config } = require('./config.js');
+const { sqlConfig } = require('./config.js');
 
-const poolPromise = new sql.ConnectionPool(config)
+const poolPromise = new sql.ConnectionPool(sqlConfig)
 	.connect()
 	.then(pool => {
 		console.log('DB에 연결되었습니다.');

@@ -63,6 +63,22 @@ class SqlConnector {
 
         return getGoals(this.user, month);
     }
+
+    /**
+     * 해당 달에 모든 목표를 달성했는지 확인하는 함수
+     * @param {String} user 사용자 이메일
+     * @param {Number} month 월
+     * @returns {Boolean}
+     */
+    async achievedAll(user, month) {
+        const result = await this.connPool.request()
+        .input('user', sql.VarChar, user)
+        .input('month', sql.Int, month)
+        .query('SELECT achieved FROM Goals WHERE [user] = @user AND month = @month;');
+
+        // 리스트로 변환한 후, 전체가 true인지 확인
+        return result.recordset.map(x => x.following).every(x => x === true);
+    }
 }
 
 module.exports = {
