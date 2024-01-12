@@ -10,21 +10,32 @@
 
 const express = require("express");
 const axios = require("axios");
+
 const { sql, poolPromise } = require("./config/server");
 const dotenv = require("dotenv");
+const { SqlConnector } = require('./db');
 
 const app = express();
 const PORT = 3000;
 
 dotenv.config();
+let sqlConn;
 
 // Enable CORS for all routes
-app.use((_, res, next) => {
+app.use(async (_, res, next) => {
+  sqlConn = new SqlConnector();
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
+app.get('/test', async (req, res) => {
+  sqlConn.setUser('nsun527@cau.ac.kr');
+  const result = await sqlConn.getFollowings();
+  res.send(result.recordset);
+});
+
 
 //루트 페이지
 //로그인 버튼을 누르면 GET /login으로 이동
@@ -97,7 +108,6 @@ app.get("/signup/google", async (req, res) => {
 
 // Run server
 app.listen(PORT, async () => {
-  connPool = await poolPromise;
   console.log("Connected to TastyNav database.");
   console.log(`Listening to port ${PORT}...`);
 });
