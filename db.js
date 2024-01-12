@@ -90,17 +90,6 @@ class SqlConnector {
     }
 
     /**
-     * 현재 사용자의 목표 목록을 받아오는 함수
-     * @param {Number} month 월
-     */
-    async getGoals(month) {
-        if (this.user == null)
-            throw new SqlError('SqlConnector.user is empty.');
-
-        return getGoals(this.user, month);
-    }
-
-    /**
      * 해당 달에 모든 목표를 달성했는지 확인하는 함수
      * @param {String} user 사용자 이메일
      * @param {Number} month 월
@@ -138,7 +127,7 @@ class SqlConnector {
             .input('id', sql.Int, id)
             .input('newGoal', sql.NVarChar, newGoal)
             .query(
-                'UPDATE Goal SET goal = @newGoal WHERE [user] = @user AND month = @month AND id = @id;'
+                'UPDATE Goals SET goal = @newGoal WHERE [user] = @user AND month = @month AND id = @id;'
             );
     }
 
@@ -157,7 +146,7 @@ class SqlConnector {
             .input('month', sql.Int, month)
             .input('id', sql.Int, id)
             .query(
-                'DELETE Goal WHERE [user] = @user AND month = @month AND id = @id;'
+                'DELETE Goals WHERE [user] = @user AND month = @month AND id = @id;'
             );
     }
 

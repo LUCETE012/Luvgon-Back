@@ -124,10 +124,10 @@ app.get('/signup/google', async (req, res) => {
 app.post('/addgoal', async (req, res) => {
     try {
         const add_info = req.body;
-        console.log(req.body);
         await sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
+        res.status(200).send();
     } catch (err) {
-        res.status(601).send(req.body);
+        res.status(601).send(err);
     }
 });
 
@@ -141,8 +141,9 @@ app.post('/editgoal', async (req, res) => {
             edit_info.id,
             edit_info.newGoal
         );
+        res.status(200).send();
     } catch (err) {
-        res.status(601).send();
+        res.status(601).send(err);
     }
 });
 
@@ -151,9 +152,10 @@ app.post('/deletegoal', async (req, res) => {
     try {
         const delete_info = req.body;
 
-        await sqlConn.deleteGoal(delet_info.month, delete_info.id);
+        await sqlConn.deleteGoal(delete_info.month, delete_info.id);
+        res.status(200).send();
     } catch (err) {
-        res.status(602).send();
+        res.status(602).send(err);
     }
 });
 
@@ -161,10 +163,10 @@ app.post('/deletegoal', async (req, res) => {
 app.get('/getgoal/:month', async (req, res) => {
     try {
         let { month } = req.params;
-        const result = await sqlConn.getGoals(month);
+        const result = await sqlConn.getGoals(sqlConn.user, month);
         res.send(result);
     } catch (err) {
-        res.status(603).send();
+        res.status(603).send(err);
     }
 });
 
@@ -179,16 +181,18 @@ app.get('/user/search/:query', async (req, res) => {
     }
 });
 
-app.get('/user/follow/:email', async (req, res) => {
+app.post('/user/follow', async (req, res) => {
     try {
-        let { email } = req.params;
-        await sqlConn.addFollowing(email);
+        const user_info = req.body;
+
+        await sqlConn.addFollowing(user_info.user);
+        res.status(200).send();
     } catch (err) {
         res.status(605).send();
     }
 });
 
-app.get('/user/friends', async (req, res) => {
+app.get('/user/followings', async (req, res) => {
     try {
         // getFollowerings 함수를 이용
         const friendsList = await sqlConn.getFollowings();
