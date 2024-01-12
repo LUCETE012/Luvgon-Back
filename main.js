@@ -37,12 +37,6 @@ app.listen(PORT, async () => {
     console.log(`Listening to port ${PORT}...`);
 });
 
-app.get('/test', async (req, res) => {
-    sqlConn.setUser('nsun527@cau.ac.kr');
-    const result = await sqlConn.getFollowings();
-    res.send(result);
-});
-
 //루트 페이지
 //로그인 버튼을 누르면 GET /login으로 이동
 app.get('/', (_, res) => {
@@ -114,26 +108,54 @@ app.get('/signup/google', async (req, res) => {
 app.post('/addgoal', async (req, res) => {
     const add_info = req.body;
 
-    sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
+    await sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
 });
 
 //목록 수정
 app.post('/editgoal', async (req, res) => {
     const edit_info = req.body;
 
-    sqlConn.modifyGoal(edit_info.month, edit_info.id, edit_info.newGoal);
+    await sqlConn.modifyGoal(edit_info.month, edit_info.id, edit_info.newGoal);
 });
 
 //목록 삭제
 app.post('/deletegoal', async (req, res) => {
     const delete_info = req.body;
 
-    sqlConn.deleteGoal(delet_info.month, delete_info.id);
+    await sqlConn.deleteGoal(delet_info.month, delete_info.id);
 });
 
 //목록 읽기
-app.post('/getgoal', async (req, res) => {
-    const get_info = req.body;
+app.get('/getgoal/:month', async (req, res) => {
+  try {
+    let { month } = req.params;
+    const result = await sqlConn.getGoals(month);
+    res.send(result);
+  }
+  catch (err) {
+    res.status(500).send();
+});
 
-    res.json(sqlConn.getGoals(get_info.month));
+app.get('/user/search/:query', async (req, res) => {
+    try {
+        let { query } = req.params;
+        const friends = await sqlConn.searchFriends(query);
+        if (friends.length === 0)
+            res.status(404).send();
+        else
+            res.send(friends);
+    } 
+    catch (err) {
+        res.status(500).send();
+    }
+});
+
+app.get('/user/follow/:email', async (req, res) => {
+    try {
+        let { email } = req.params;
+        await sqlConn.addFollowing(email);
+    }
+    catch (err) {
+        res.status(500).send();
+    }
 });
