@@ -106,46 +106,59 @@ app.get('/signup/google', async (req, res) => {
 
 //목록에 추가
 app.post('/addgoal', async (req, res) => {
-    const add_info = req.body;
+    try {
+        const add_info = req.body;
 
-    await sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
+        await sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
 //목록 수정
 app.post('/editgoal', async (req, res) => {
-    const edit_info = req.body;
+    try {
+        const edit_info = req.body;
 
-    await sqlConn.modifyGoal(edit_info.month, edit_info.id, edit_info.newGoal);
+        await sqlConn.modifyGoal(
+            edit_info.month,
+            edit_info.id,
+            edit_info.newGoal
+        );
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
 //목록 삭제
 app.post('/deletegoal', async (req, res) => {
-    const delete_info = req.body;
+    try {
+        const delete_info = req.body;
 
-    await sqlConn.deleteGoal(delet_info.month, delete_info.id);
+        await sqlConn.deleteGoal(delet_info.month, delete_info.id);
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
 //목록 읽기
 app.get('/getgoal/:month', async (req, res) => {
-  try {
-    let { month } = req.params;
-    const result = await sqlConn.getGoals(month);
-    res.send(result);
-  }
-  catch (err) {
-    res.status(500).send();
+    try {
+        let { month } = req.params;
+        const result = await sqlConn.getGoals(month);
+        res.send(result);
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
 app.get('/user/search/:query', async (req, res) => {
     try {
         let { query } = req.params;
         const friends = await sqlConn.searchFriends(query);
-        if (friends.length === 0)
-            res.status(404).send();
-        else
-            res.send(friends);
-    } 
-    catch (err) {
+        if (friends.length === 0) res.status(404).send();
+        else res.send(friends);
+    } catch (err) {
         res.status(500).send();
     }
 });
@@ -154,8 +167,7 @@ app.get('/user/follow/:email', async (req, res) => {
     try {
         let { email } = req.params;
         await sqlConn.addFollowing(email);
-    }
-    catch (err) {
+    } catch (err) {
         res.status(500).send();
     }
 });
