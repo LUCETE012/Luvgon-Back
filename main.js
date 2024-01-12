@@ -16,6 +16,7 @@ const { SqlConnector } = require('./db');
 
 const app = express();
 const PORT = 3000;
+
 /**
  * @type {SqlConnector}
  */
@@ -82,6 +83,7 @@ app.get('/signup', (req, res) => {
     res.redirect(url);
 });
 
+// 회원가입
 app.get('/signup/google', async (req, res) => {
     const { code } = req.query;
     console.log(`code: ${code}`);
@@ -102,15 +104,37 @@ app.get('/signup/google', async (req, res) => {
     res.json(resp2.data);
 });
 
+//목록에 추가
+app.post('/addgoal', async (req, res) => {
+    const add_info = req.body;
 
-/////////// 친구 (검색 -> 리스트, 친구 목록 )
-/*
+    await sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
+});
 
-/user/search/:query
-/user/follow/:email
-/user/friends
+//목록 수정
+app.post('/editgoal', async (req, res) => {
+    const edit_info = req.body;
 
-*/
+    await sqlConn.modifyGoal(edit_info.month, edit_info.id, edit_info.newGoal);
+});
+
+//목록 삭제
+app.post('/deletegoal', async (req, res) => {
+    const delete_info = req.body;
+
+    await sqlConn.deleteGoal(delet_info.month, delete_info.id);
+});
+
+//목록 읽기
+app.get('/getgoal/:month', async (req, res) => {
+  try {
+    let { month } = req.params;
+    const result = await sqlConn.getGoals(month);
+    res.send(result);
+  }
+  catch (err) {
+    res.status(500).send();
+});
 
 app.get('/user/search/:query', async (req, res) => {
     try {
