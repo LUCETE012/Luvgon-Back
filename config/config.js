@@ -14,12 +14,12 @@ dotenv.config();
 
 const config = {
     server: process.env.DB_DEV_SERVER,
-	datebase: 'Luvgon',//process.env.DB_DEV_DATEBASE,
+	datebase: process.env.DB_DEV_DATEBASE,
 	user: process.env.DB_DEV_USERNAME,
 	password: process.env.DB_DEV_PASSOWRD,
 	options: {
         encrypt: true,
-		database: 'Luvgon'
+		database: process.env.DB_DEV_DATEBASE,
     },
 }
 
