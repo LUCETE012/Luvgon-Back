@@ -8,7 +8,6 @@
  *
  */
 
-
 const DEBUG = true;
 
 const express = require('express');
@@ -38,8 +37,7 @@ app.use(async (_, res, next) => {
 // Run server
 app.listen(PORT, async () => {
     sqlConn = new SqlConnector(await poolPromise);
-    if (DEBUG)
-        sqlConn.setUser('test@gmail.com');
+    if (DEBUG) sqlConn.setUser('test@gmail.com');
     console.log('Connected to TastyNav database.');
     console.log(`Listening to port ${PORT}...`);
 });
@@ -86,7 +84,7 @@ app.get('/auth/google', async (req, res) => {
             await sqlConn.addGoal(i, 1, default_goals[i]);
         }
     } catch (err) {
-        res.status(607).send();
+        res.status(500).send();
     }
 });
 
@@ -127,7 +125,7 @@ app.post('/addgoal', async (req, res) => {
         console.log(req.body);
         await sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
     } catch (err) {
-        res.status(601).send(req.body);
+        res.status(500).send(req.body);
     }
 });
 
@@ -142,7 +140,7 @@ app.post('/editgoal', async (req, res) => {
             edit_info.newGoal
         );
     } catch (err) {
-        res.status(601).send();
+        res.status(500).send();
     }
 });
 
@@ -153,7 +151,7 @@ app.post('/deletegoal', async (req, res) => {
 
         await sqlConn.deleteGoal(delet_info.month, delete_info.id);
     } catch (err) {
-        res.status(602).send();
+        res.status(500).send();
     }
 });
 
@@ -164,7 +162,7 @@ app.get('/getgoal/:month', async (req, res) => {
         const result = await sqlConn.getGoals(month);
         res.send(result);
     } catch (err) {
-        res.status(603).send();
+        res.status(500).send();
     }
 });
 
@@ -175,7 +173,7 @@ app.get('/user/search/:query', async (req, res) => {
         if (friends.length === 0) res.status(404).send();
         else res.send(friends);
     } catch (err) {
-        res.status(604).send();
+        res.status(500).send();
     }
 });
 
@@ -184,7 +182,7 @@ app.get('/user/follow/:email', async (req, res) => {
         let { email } = req.params;
         await sqlConn.addFollowing(email);
     } catch (err) {
-        res.status(605).send();
+        res.status(500).send();
     }
 });
 
@@ -195,6 +193,6 @@ app.get('/user/friends', async (req, res) => {
         // 프론트엔드에 목록을 응답
         res.send(friendsList);
     } catch (error) {
-        res.status(606).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
