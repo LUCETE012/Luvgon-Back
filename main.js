@@ -16,6 +16,9 @@ const { SqlConnector } = require('./db');
 
 const app = express();
 const PORT = 3000;
+/**
+ * @type {SqlConnector}
+ */
 let sqlConn;
 
 // Enable CORS for all routes
@@ -103,3 +106,24 @@ app.listen(PORT, async () => {
   console.log("Connected to TastyNav database.");
   console.log(`Listening to port ${PORT}...`);
 });
+
+/*
+  - 친구 검색 page(/user/search/:query)
+      - 친구 검색 부분 검색해도 리스트로 가능
+      - 친구 팔로잉(/user/follow/:email)
+
+  - 친구 목록 page(/user/friends) - 하연
+      - 친구 이름 + 그 달의 목록
+*/
+
+app.get('/user/friends', async (req,res) => { 
+  try {
+      // getFollowerings 함수를 이용
+      const friendsList = await sqlConn.getFollowings();
+      // 프론트엔드에 목록을 응답
+      res.send(friendsList);
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+ 
