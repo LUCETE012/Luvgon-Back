@@ -1,4 +1,4 @@
-const { sql, poolPromise } = require("./config/server");
+const { sql } = require("./config/server");
 
 class SqlError extends Error {
     constructor(message) {
@@ -8,11 +8,9 @@ class SqlError extends Error {
 }
 
 class SqlConnector {
-    constructor() {
-        this.connPool = (async () => await poolPromise)();
-
+    constructor(pool) {
+        this.connPool = pool;
         this.user = null;
-
     }
 
     /**
@@ -32,22 +30,26 @@ class SqlConnector {
         if (this.user == null)
             throw new SqlError('SqlConnector.user is empty.');
 
-//         const connPool = await poolPromise;
         const result = await this.connPool.request()
             .input('user', sql.VarChar, this.user)
             .query('SELECT following FROM Following WHERE [user] = @user;');
 
-        return result.recordset;
+        return result.recordset.map(x => x.following);
     }
 
     /**
      * 특정 사용자의 목표 목록을 받아오는 함수
      * @param {String} user 사용자 이메일
      * @param {Number} month 월
-     * @returns 
+     * @returns {Object[]}
      */
     async getGoals(user, month) {
-        return [];
+        const result = await this.connPool.request()
+            .input('user', sql.VarChar, user)
+            .input('month', sql.Int, month)
+            .query('SELECT id, goal FROM Goals WHERE [user] = @user AND month = @month;');
+
+        return result.recordset;
     }
 
     

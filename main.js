@@ -11,6 +11,7 @@
 const express = require("express");
 const axios = require("axios");
 const dotenv = require('dotenv');
+const { sql, poolPromise } = require('./config/server');
 const { SqlConnector } = require('./db');
 const app = express();
 const PORT = 3000;
@@ -20,7 +21,6 @@ let sqlConn;
 
 // Enable CORS for all routes
 app.use(async (_, res, next) => {
-  sqlConn = new SqlConnector();
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -30,7 +30,7 @@ app.use(async (_, res, next) => {
 app.get('/test', async (req, res) => {
   sqlConn.setUser('nsun527@cau.ac.kr');
   const result = await sqlConn.getFollowings();
-  res.send(result.recordset);
+  res.send(JSON.stringify(result));
 });
 
 
@@ -105,6 +105,7 @@ app.get("/signup/google", async (req, res) => {
 
 // Run server
 app.listen(PORT, async () => {
+  sqlConn = new SqlConnector(await poolPromise);
   console.log("Connected to TastyNav database.");
   console.log(`Listening to port ${PORT}...`);
 });
