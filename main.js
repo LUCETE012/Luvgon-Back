@@ -13,6 +13,7 @@ const axios = require('axios');
 const { authConfig } = require('./config/config');
 const { sql, poolPromise } = require('./config/server');
 const { SqlConnector } = require('./db');
+const { default_goals } = require('./default_goals');
 
 const app = express();
 const PORT = 3000;
@@ -71,7 +72,13 @@ app.get('/auth/google', async (req, res) => {
     const resp2 = await axios.get(authConfig.userinfoUrl, {
         headers: { Authorization: `Bearer ${resp.data.access_token}` },
     });
-    res.json(resp2.data['email']);
+    // res.json(resp2.data['email']);
+    sqlConn.setUser(resp2.data['email']);
+    try {
+        await sqlConn.addGoal(default_goals.month, 1, default_goals.goal);
+    } catch (err) {
+        res.status(500).send();
+    }
 });
 
 app.get('/signup', (req, res) => {
