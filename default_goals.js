@@ -1,4 +1,4 @@
-const default_goal = {
+const default_goals = {
     1: '메일함 비우기',
     2: '주변 사람들에게 사랑한다고 말하기',
     3: '플리마켓에 방문 또는 참여하기',
@@ -13,6 +13,4 @@ const default_goal = {
     12: '안 입는 옷을 기부하기',
 };
 
-module.exports = {
-    default_goal
-};
+module.exports = { default_goals };

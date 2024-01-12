@@ -74,7 +74,6 @@ app.get('/auth/google', async (req, res) => {
     res.json(resp2.data['email']);
 
     sqlConn.setUser(resp2.data['email']);
-
     try {
         for (let i = 1; i < 13; i++) {
             await sqlConn.addGoal(i, 1, default_goals[i]);
