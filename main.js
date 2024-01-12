@@ -71,8 +71,8 @@ app.get('/auth/google', async (req, res) => {
     const resp2 = await axios.get(authConfig.userinfoUrl, {
         headers: { Authorization: `Bearer ${resp.data.access_token}` },
     });
-    // res.json(resp2.data['email']);
-    sqlConn.setUser(resp2.data['email']);
+
+    
     try {
         await sqlConn.addGoal(default_goals.month, 1, default_goals.goal);
     } catch (err) {
