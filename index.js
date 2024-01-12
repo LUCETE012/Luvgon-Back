@@ -12,7 +12,6 @@
 // Import required modules
 const express = require('express');
 const { sql, poolPromise } = require('./config/server');
-const { pool } = require('mssql');
 
 // Server and Port settings
 const app = express();
@@ -40,3 +39,8 @@ app.get('/', async (_, res) => {
         .query('SELECT * FROM Goals');
     res.send(result.recordset);
 })
+
+/*
+.input('name', sql.NVarChar, name)
+    .query('SELECT * FROM Restaurants WHERE name = @name;'); 
+*/
