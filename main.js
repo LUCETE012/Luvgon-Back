@@ -16,6 +16,10 @@ const { SqlConnector } = require('./db');
 
 const app = express();
 const PORT = 3000;
+
+/**
+ * @type {SqlConnector}
+ */
 let sqlConn;
 
 // Enable CORS for all routes
@@ -24,6 +28,13 @@ app.use(async (_, res, next) => {
     res.header('Access-Control-Allow-Methods', 'GET');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
+});
+
+// Run server
+app.listen(PORT, async () => {
+    sqlConn = new SqlConnector(await poolPromise);
+    console.log('Connected to TastyNav database.');
+    console.log(`Listening to port ${PORT}...`);
 });
 
 app.get('/test', async (req, res) => {
@@ -78,6 +89,7 @@ app.get('/signup', (req, res) => {
     res.redirect(url);
 });
 
+// 회원가입
 app.get('/signup/google', async (req, res) => {
     const { code } = req.query;
     console.log(`code: ${code}`);
@@ -98,9 +110,30 @@ app.get('/signup/google', async (req, res) => {
     res.json(resp2.data);
 });
 
-// Run server
-app.listen(PORT, async () => {
-    sqlConn = new SqlConnector(await poolPromise);
-    console.log('Connected to TastyNav database.');
-    console.log(`Listening to port ${PORT}...`);
+//목록에 추가
+app.post('/addgoal', async (req, res) => {
+    const add_info = req.body;
+
+    sqlConn.addGoal(add_info.month, add_info.id, add_info.goal);
+});
+
+//목록 수정
+app.post('/editgoal', async (req, res) => {
+    const edit_info = req.body;
+
+    sqlConn.modifyGoal(edit_info.month, edit_info.id, edit_info.newGoal);
+});
+
+//목록 삭제
+app.post('/deletegoal', async (req, res) => {
+    const delete_info = req.body;
+
+    sqlConn.deleteGoal(delet_info.month, delete_info.id);
+});
+
+//목록 읽기
+app.post('/getgoal', async (req, res) => {
+    const get_info = req.body;
+
+    res.json(sqlConn.getGoals(get_info.month));
 });
