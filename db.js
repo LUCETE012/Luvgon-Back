@@ -158,6 +158,25 @@ class SqlConnector {
                 'INSERT INTO Following([user], following) VALUES(@user, @following);'
             );
     }
+
+    /**
+     * 목록에 목표 추가하는 함수
+     * @param {String} user 사용자 이메일
+     * @param {Int} month 월
+     * @param {Int} id 아이디
+     * @param {String} goal 목표
+     */
+    async addGoal(user, month, Id, goal) {
+        const result = await this.connPool
+            .request()
+            .input('user', sql.VarChar, user)
+            .input('month', sql.Int, month)
+            .input('id', sql.Int, id)
+            .input('goal', sql.VarChar(goal))
+            .query(
+                'INSERT INTO Goals([user], month, id, goal, achieved) VALUES(@user, @month, @id, @goal, FALSE);'
+            );
+    }
 }
 
 module.exports = {
