@@ -23,6 +23,19 @@ class SqlConnector {
     }
 
     /**
+     * 친구를 검색해서 배열로 가져오는 함수
+     * @param {String} partialEmail 부분 이메일
+     * @returns 
+     */
+    async searchFriends(partialEmail) {
+        const result = await this.connPool.request()
+            .input('user', sql.VarChar, `%${partialEmail}%`)
+            .query('SELECT DISTINCT [user] FROM Goals WHERE [user] LIKE @user;');
+        
+        return result.recordset.map(x => x.user);
+    }
+
+    /**
      * 사용자의 팔로잉 목록을 가져오는 함수
      * @returns {String[]} 팔로잉 목록
      */
@@ -78,6 +91,40 @@ class SqlConnector {
 
         // 리스트로 변환한 후, 전체가 true인지 확인
         return result.recordset.map(x => x.following).every(x => x === true);
+    }
+
+    /**
+     * 목표 하나를 수정하는 함수
+     * @param {Number} month 월
+     * @param {Number} id 목표 ID
+     * @param {String} newGoal 새 목표
+     */
+    async modifyGoal(month, id, newGoal) {
+        if (this.user == null)
+        throw new SqlError('SqlConnector.user is empty.');
+
+        await this.connPool.request()
+            .input('user', sql.VarChar, this.user)
+            .input('month', sql.Int, month)
+            .input('id', sql.Int, id)
+            .input('newGoal', sql.NVarChar, newGoal)
+            .query('UPDATE Goal SET goal = @newGoal WHERE [user] = @user AND month = @month AND id = @id;');
+    }
+
+    /**
+     * 목표 하나를 삭제하는 함수
+     * @param {Number} month 월
+     * @param {Number} id 목표 ID
+     */
+    async deleteGoal(month, id) {
+        if (this.user == null)
+            throw new SqlError('SqlConnector.user is empty.');
+
+            await this.connPool.request()
+            .input('user', sql.VarChar, this.user)
+            .input('month', sql.Int, month)
+            .input('id', sql.Int, id)
+            .query('DELETE Goal WHERE [user] = @user AND month = @month AND id = @id;');
     }
 }
 
