@@ -1,11 +1,11 @@
 /**
- * 
+ *
  *  main.js
  *  Back-end server
- * 
+ *
  *  Created: 2024-01-12
  *  Last modified: -
- * 
+ *
  */
 
 const express = require("express");
@@ -13,6 +13,7 @@ const axios = require("axios");
 const dotenv = require('dotenv');
 const { sql, poolPromise } = require('./config/server');
 const { SqlConnector } = require('./db');
+
 const app = express();
 const PORT = 3000;
 
