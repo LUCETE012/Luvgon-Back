@@ -148,16 +148,17 @@ app.post('/editgoal', async (req, res) => {
 });
 
 //목록 삭제
-app.post('/deletegoal', async (req, res) => {
+app.delete('/deletegoal/:month/:id', async (req, res) => {
     try {
-        const delete_info = req.body;
+        let { id, month } = req.params;
 
-        await sqlConn.deleteGoal(delete_info.month, delete_info.id);
+        await sqlConn.deleteGoal(month, id);
+
         res.status(200).send();
     } catch (err) {
-        res.status(602).send(err);
+      res.status(500).send(err);
     }
-});
+  });
 
 //목록 읽기
 app.get('/getgoal/:month', async (req, res) => {

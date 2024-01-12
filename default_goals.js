@@ -13,4 +13,6 @@ const default_goals = {
     12: '안 입는 옷을 기부하기',
 };
 
-module.exports = { default_goals };
+module.exports = {
+    default_goals
+};

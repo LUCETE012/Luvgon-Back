@@ -25,7 +25,7 @@ class SqlConnector {
     /**
      * 친구를 검색해서 배열로 가져오는 함수
      * @param {String} partialEmail 부분 이메일
-     * @returns
+     * @returns {String[]}
      */
     async searchFriends(partialEmail) {
         const result = await this.connPool
