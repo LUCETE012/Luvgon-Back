@@ -161,6 +161,27 @@ class SqlConnector {
                 'DELETE Goal WHERE [user] = @user AND month = @month AND id = @id;'
             );
     }
+
+    /**
+     * 목록에 목표 추가하는 함수
+     * @param {Number} month 월
+     * @param {Number} id 아이디
+     * @param {String} goal 목표
+     */
+    async addGoal(month, id, goal) {
+        if (this.user == null)
+            throw new SqlError('SqlConnector.user is empty.');
+
+        await this.connPool
+            .request()
+            .input('user', sql.VarChar, this.user)
+            .input('month', sql.Int, month)
+            .input('id', sql.Int, id)
+            .input('goal', sql.NVarChar, goal)
+            .query(
+                'INSERT INTO Goals VALUES(@user, @month, @id, @goal, 0);'
+            );
+    }
 }
 
 module.exports = {
