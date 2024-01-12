@@ -55,6 +55,24 @@ class SqlConnector {
     }
 
     /**
+     * 팔로우하는 친구를 추가하는 함수
+     * @param {String} user 사용자 이메일
+     * @param {String} following 팔로잉 하는 친구 이메일
+     */
+        async addFollowing(user, following) {
+            if (this.user == null)
+                throw new SqlError('SqlConnector.user is empty.');
+    
+            await this.connPool
+                .request()
+                .input('user', sql.VarChar, user)
+                .input('following', sql.VarChar, following)
+                .query(
+                    'INSERT INTO Following VALUES(@user, @following);'
+                );
+        }
+
+    /**
      * 특정 사용자의 목표 목록을 받아오는 함수
      * @param {String} user 사용자 이메일
      * @param {Number} month 월
@@ -141,24 +159,6 @@ class SqlConnector {
             .input('id', sql.Int, id)
             .query(
                 'DELETE Goal WHERE [user] = @user AND month = @month AND id = @id;'
-            );
-    }
-
-    /**
-     * 팔로우하는 친구를 추가하는 함수
-     * @param {String} user 사용자 이메일
-     * @param {String} following 팔로잉 하는 친구 이메일
-     */
-    async addFollowing(user, following) {
-        if (this.user == null)
-            throw new SqlError('SqlConnector.user is empty.');
-
-        await this.connPool
-            .request()
-            .input('user', sql.VarChar, user)
-            .input('following', sql.VarChar, following)
-            .query(
-                'INSERT INTO Following VALUES(@user, @following);'
             );
     }
 }
