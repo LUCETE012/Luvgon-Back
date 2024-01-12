@@ -134,6 +134,7 @@ app.get('/getgoal/:month', async (req, res) => {
   }
   catch (err) {
     res.status(500).send();
+  }
 });
 
 app.get('/user/search/:query', async (req, res) => {
