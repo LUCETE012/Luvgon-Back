@@ -1,0 +1,25 @@
+{
+  "name": "luvgon-back",
+  "version": "1.0.0",
+  "description": "2024 GDSC New Year Hackathon - Team A (Backend)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LUCETE012/Luvgon-Back.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LUCETE012/Luvgon-Back/issues"
+  },
+  "homepage": "https://github.com/LUCETE012/Luvgon-Back#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mssql": "^10.0.1"
+  }
+}
