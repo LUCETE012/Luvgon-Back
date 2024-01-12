@@ -149,13 +149,16 @@ class SqlConnector {
      * @param {String} user 사용자 이메일
      * @param {String} following 팔로잉 하는 친구 이메일
      */
-    async addFollow(user, following) {
-        const result = await this.connPool
+    async addFollowing(user, following) {
+        if (this.user == null)
+            throw new SqlError('SqlConnector.user is empty.');
+
+        await this.connPool
             .request()
             .input('user', sql.VarChar, user)
             .input('following', sql.VarChar, following)
             .query(
-                'INSERT INTO Following([user], following) VALUES(@user, @following);'
+                'INSERT INTO Following VALUES(@user, @following);'
             );
     }
 
