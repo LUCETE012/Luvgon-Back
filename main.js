@@ -16,6 +16,9 @@ const { SqlConnector } = require('./db');
 
 const app = express();
 const PORT = 3000;
+/**
+ * @type {SqlConnector}
+ */
 let sqlConn;
 
 // Enable CORS for all routes
@@ -26,10 +29,11 @@ app.use(async (_, res, next) => {
     next();
 });
 
-app.get('/test', async (req, res) => {
-    sqlConn.setUser('nsun527@cau.ac.kr');
-    const result = await sqlConn.getFollowings();
-    res.send(result);
+// Run server
+app.listen(PORT, async () => {
+    sqlConn = new SqlConnector(await poolPromise);
+    console.log('Connected to TastyNav database.');
+    console.log(`Listening to port ${PORT}...`);
 });
 
 //루트 페이지
@@ -98,9 +102,36 @@ app.get('/signup/google', async (req, res) => {
     res.json(resp2.data);
 });
 
-// Run server
-app.listen(PORT, async () => {
-    sqlConn = new SqlConnector(await poolPromise);
-    console.log('Connected to TastyNav database.');
-    console.log(`Listening to port ${PORT}...`);
+
+/////////// 친구 (검색 -> 리스트, 친구 목록 )
+/*
+
+/user/search/:query
+/user/follow/:email
+/user/friends
+
+*/
+
+app.get('/user/search/:query', async (req, res) => {
+    try {
+        let { query } = req.params;
+        const friends = await sqlConn.searchFriends(query);
+        if (friends.length === 0)
+            res.status(404).send();
+        else
+            res.send(friends);
+    } 
+    catch (err) {
+        res.status(500).send();
+    }
+});
+
+app.get('/user/follow/:email', async (req, res) => {
+    try {
+        let { email } = req.params;
+        await sqlConn.addFollowing(email);
+    }
+    catch (err) {
+        res.status(500).send();
+    }
 });
