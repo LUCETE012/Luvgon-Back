@@ -16,7 +16,6 @@ const { SqlConnector } = require('./db');
 
 const app = express();
 const PORT = 3000;
-
 /**
  * @type {SqlConnector}
  */
@@ -159,4 +158,15 @@ app.get('/user/follow/:email', async (req, res) => {
     catch (err) {
         res.status(500).send();
     }
+});
+
+app.get('/user/friends', async (req, res) => { 
+  try {
+      // getFollowerings 함수를 이용
+      const friendsList = await sqlConn.getFollowings();
+      // 프론트엔드에 목록을 응답
+      res.send(friendsList);
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
